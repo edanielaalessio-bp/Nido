@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nido</title>
+<meta name="theme-color" content="#0f7b5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nido">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#f3f4f1;--card:#fff;--tx:#17201c;--mut:#6b736f;--line:#e7e9e4;--ac:#0f7b5f;--ac2:#14a37c;--acs:#e3f4ed;--g:#2563eb;--d:#db2777;--warn:#c2410c;--bad:#dc2626;--sh:0 1px 2px rgba(16,24,20,.05),0 4px 14px rgba(16,24,20,.06);--nav:64px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1210;--card:#181d1a;--tx:#eef2ef;--mut:#95a09a;--line:#262d29;--ac:#34c79a;--ac2:#1f9d77;--acs:#123328;--g:#60a5fa;--d:#f472b6;--warn:#fb923c;--bad:#f87171;--sh:none;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+#app{max-width:640px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top,0px)) 14px calc(var(--nav) + 96px + env(safe-area-inset-bottom,0px))}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.num{font-variant-numeric:tabular-nums}
+
+/* encabezado */
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.mnav{display:flex;align-items:center;gap:2px;font-weight:700;font-size:18px}
+.mnav button{width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1;display:grid;place-items:center}
+.mnav span{padding:0 4px;white-space:nowrap}
+.who{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;background:var(--card);padding:4px 10px 4px 4px;border-radius:99px;box-shadow:var(--sh)}
+.av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:800;flex:none}
+.av.G{background:var(--g);color:#fff}.av.D{background:var(--d);color:#fff}.av.lg{width:34px;height:34px;font-size:15px}
+
+.hero{background:linear-gradient(135deg,#0b6b52 0%,#0f7b5f 45%,#1aa982 100%);color:#fff;border-radius:24px;padding:12px 16px 18px;margin-bottom:12px;box-shadow:0 10px 26px rgba(15,123,95,.28);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero .top{margin-bottom:10px;position:relative;z-index:1}
+.hero .mnav button{background:rgba(255,255,255,.16);color:#fff}
+.hero .who{background:rgba(255,255,255,.18);color:#fff;box-shadow:none}
+.hero .k{font-size:13px;opacity:.85;position:relative}
+.hero .v{font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin:3px 0 4px;position:relative}
+.hero .s{font-size:13px;opacity:.85;position:relative}
+.hero .hb{background:#fff;color:#0b6b52;font-weight:700;padding:10px 20px;border-radius:12px;margin-top:12px;position:relative}
+.hero .hb2{background:rgba(255,255,255,.18);color:#fff;font-weight:600;padding:10px 14px;border-radius:12px;margin-top:12px;margin-left:6px;position:relative;font-size:14px}
+
+.card{background:var(--card);border-radius:20px;padding:15px;box-shadow:var(--sh);margin-bottom:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.two .card{margin:0}
+.ttl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.ttl b{font-size:17px}
+.lbl{font-size:13px;color:var(--mut)}
+.big{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.G{color:var(--g)}.D{color:var(--d)}
+.bar{height:9px;background:var(--line);border-radius:9px;margin:8px 0 6px;overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--ac2),var(--ac));border-radius:9px}
+.bar.sm{height:6px;margin:6px 0 0}.bar.red>i{background:var(--bad)}
+.pp{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-weight:700}
+.sub{display:block;font-size:12px;color:var(--mut)}
+.btn{background:var(--ac);color:#fff;padding:13px 18px;border-radius:14px;font-weight:700}
+.btn.sec{background:var(--bg);color:var(--tx);border:1px solid var(--line)}
+.btn[disabled]{opacity:.5}
+.link{color:var(--ac);font-weight:700;font-size:14px;padding:6px 0}
+.pill{font-size:12px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--acs);color:var(--ac);white-space:nowrap}
+
+/* filas */
+.row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.ci{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;flex:none}
+.rt{flex:1;min-width:0}.rt b{display:block;font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt span{font-size:12.5px;color:var(--mut);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.am{font-weight:700;white-space:nowrap;text-align:right}.am small{display:block;font-size:11px;font-weight:600;color:var(--mut)}.am.pos{color:var(--ac)}
+.ic{width:28px;height:32px;border-radius:8px;font-size:15px;color:var(--mut);display:grid;place-items:center;flex:none}
+.ic.arm{color:var(--warn);font-size:12px;width:auto;padding:0 6px;font-weight:700}
+.ic.plus{width:30px;height:30px;background:var(--acs);color:var(--ac);font-weight:800;font-size:18px;border-radius:9px}
+.empty{text-align:center;color:var(--mut);padding:26px 10px}
+.dayh{font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;padding:12px 0 2px}
+
+details.cat{border-bottom:1px solid var(--line)}details.cat:last-child{border:0}
+details.cat summary{list-style:none;padding:10px 0;cursor:pointer;display:flex;gap:10px;align-items:center}details.cat summary::-webkit-details-marker{display:none}
+.ch{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:15px}.ch>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ch>span:last-child{white-space:nowrap;flex:none}
+.cr{display:flex;align-items:center;gap:8px;padding:6px 0 6px 48px;font-size:14px}
+.cr .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cr .v{white-space:nowrap;color:var(--mut)}.cr .v b{color:var(--tx)}
+.over{color:var(--bad)!important}.done{color:var(--ac)!important}
+.chev{color:var(--mut);transition:transform .2s;font-size:13px}details[open] .chev{transform:rotate(90deg)}
+
+/* navegación inferior */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav>div{max-width:640px;margin:0 auto;display:flex;height:var(--nav)}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:600;color:var(--mut)}
+.nav button i{font-style:normal;font-size:21px;line-height:1;filter:grayscale(1);opacity:.7}
+.nav button.on{color:var(--ac)}.nav button.on i{filter:none;opacity:1}
+.fab{position:fixed;right:max(16px,calc(50% - 304px));bottom:calc(var(--nav) + 14px + env(safe-area-inset-bottom,0px));padding:14px 20px;border-radius:18px;background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;font-weight:800;font-size:16px;box-shadow:0 8px 20px rgba(15,123,95,.35);z-index:9}
+.fab.x{background:linear-gradient(135deg,#a855f7,#7c3aed);box-shadow:0 8px 20px rgba(124,58,237,.35)}
+
+/* hojas */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fd .15s}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:92%;overflow:auto;border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:up .2s ease-out}
+.sheet:before{content:"";display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+.sheet h2{margin:0 0 12px;font-size:20px}
+@keyframes up{from{transform:translateY(40px);opacity:.6}}@keyframes fd{from{opacity:0}}
+.f{margin-bottom:13px}.f>label{display:block;font-size:13px;font-weight:600;color:var(--mut);margin-bottom:5px}
+input[type=text],input[type=email],input[type=password],input[type=date],input[type=number]{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;outline:none}
+input:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--acs)}
+input.amt{font-size:28px;font-weight:800}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;padding:10px 8px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:14px;white-space:nowrap}.seg button.on{background:var(--acs);border-color:var(--ac);color:var(--ac);font-weight:700}
+.chips button{flex:none;padding:8px 11px}
+.seg.tipo button{padding:12px 8px;font-size:15px}
+.seg.tipo button.on[data-v=extra]{background:#f3e8ff;border-color:#7c3aed;color:#7c3aed}
+@media (prefers-color-scheme:dark){.seg.tipo button.on[data-v=extra]{background:#2e1a47;color:#c4b5fd;border-color:#a78bfa}}
+.hint{font-size:13px;color:var(--mut);margin-top:5px}
+.acts{display:flex;gap:8px;margin-top:6px}.acts .btn{flex:1}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:50;font-size:14px;font-weight:600;max-width:90%;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.center{text-align:center;padding:30px 6px}.center .btn{display:block;width:100%;margin:10px 0;font-size:17px}
+.pr{display:flex;gap:6px;align-items:center;padding:5px 0}
+.pr input{padding:9px 10px!important;font-size:15px!important}
+.pr .nm{flex:1.4}.pr .es{flex:1;text-align:right}
+.demo{background:#fef3c7;color:#92400e;font-size:12.5px;padding:7px 12px;border-radius:12px;margin-bottom:10px;text-align:center}
+@media (prefers-color-scheme:dark){.demo{background:#422006;color:#fcd34d}}
+.photo{max-width:100%;border-radius:14px;display:block;margin:0 auto}
+.xb{display:flex;align-items:center;gap:10px;padding:7px 0}.xb .rt b{font-size:14px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="layer"></div>
+<script type="module">
+/* =========================================================
+   1) CONFIGURACIÓN — pegá acá lo que te da Firebase
+   (Configuración del proyecto › Tus apps › SDK › Config).
+   Mientras diga PEGAR_ACA la app funciona en MODO DEMO
+   (los datos quedan solo en ese teléfono).
+   ========================================================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBgPZci897JBV410C0GFE3299uX_un4g4s",
+  authDomain: "nido38.firebaseapp.com",
+  projectId: "nido38",
+  storageBucket: "nido38.firebasestorage.app",
+  messagingSenderId: "752378126671",
+  appId: "1:752378126671:web:95108c1e59a41054fe653a"
+};
+
+const N = {G:'Gonza', D:'Dani'};
+
+/* Gastos fijos del mes: categorías y conceptos iniciales (el presupuesto se edita desde la app) */
+const CATS = [
+  {id:'hogar', ic:'🏠', col:'#0f7b5f', name:'Hogar',        items:['Expensas ordinarias','Expensas extraordinarias','Préstamo hipotecario','Fichas de lavado']},
+  {id:'imp',   ic:'🧾', col:'#d97706', name:'Impuestos y servicios', items:['Municipalidad','Luz','Gas','ARBA','Flow']},
+  {id:'super', ic:'🛒', col:'#2563eb', name:'Supermercado', items:['Supermercado','Carne','Huevos','Pollo','Verdura','Fiambre','Otros']},
+  {id:'tomy',  ic:'🐱', col:'#db2777', name:'Tomy',         items:['Comida','Piedritas','Veterinario','Filtros','Otros gastos']},
+  {id:'otros', ic:'📦', col:'#6b7280', name:'Otros',        items:['Otros']},
+];
+/* Gastos extra (fuera del presupuesto mensual) */
+const XCATS = [
+  {id:'tarjeta', ic:'💳', col:'#7c3aed', name:'Tarjeta'},
+  {id:'salidas', ic:'🍽️', col:'#ea580c', name:'Salidas y comidas'},
+  {id:'gustos',  ic:'🍦', col:'#ec4899', name:'Gustitos'},
+  {id:'viajes',  ic:'✈️', col:'#0891b2', name:'Viajes y paseos'},
+  {id:'regalos', ic:'🎁', col:'#dc2626', name:'Regalos'},
+  {id:'xotros',  ic:'✨', col:'#6b7280', name:'Otros'},
+];
+const DEFAULT_ITEMS = CATS.flatMap(c => c.items.map(name => ({cat:c.id, name, est:0})));
+const catOf = id => CATS.find(c=>c.id===id) || XCATS.find(c=>c.id===id) || CATS[CATS.length-1];
+const ciHtml = c => `<div class="ci" style="background:color-mix(in srgb,${c.col} 15%,transparent)">${c.ic}</div>`;
+
+/* ---------- utilidades ---------- */
+const money = n => {n=Math.round((n||0)*100)/100;const dec=n%1!==0;return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:dec?2:0,maximumFractionDigits:2}).format(n)};
+function parseAmt(s){s=String(s??'').replace(/[\s$]/g,'');if(!s)return NaN;if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');const v=Number(s);return isFinite(v)?Math.round(v*100)/100:NaN}
+const fmtIn = n => n ? String(n).replace('.',',') : '';
+const pad = n => String(n).padStart(2,'0');
+const ymOf = d => d.getFullYear()+'-'+pad(d.getMonth()+1);
+const today = () => {const d=new Date();return ymOf(d)+'-'+pad(d.getDate())};
+const mIdx = s => {const[y,m]=s.split('-').map(Number);return y*12+m-1};
+const mFrom = i => Math.floor(i/12)+'-'+pad(i%12+1);
+const cap = t => t[0].toUpperCase()+t.slice(1);
+const mLabel = s => {const[y,m]=s.split('-').map(Number);return cap(new Date(y,m-1,1).toLocaleDateString('es-AR',{month:'long'}))+' '+y};
+const mShort = s => {const[y,m]=s.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('es-AR',{month:'short',year:'2-digit'})};
+const dLabel = s => {const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('es-AR',{day:'numeric',month:'short'})};
+const dLong = s => {const[y,m,d]=s.split('-').map(Number);return cap(new Date(y,m-1,d).toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}))};
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = s => document.querySelector(s);
+const lsGet = k => {try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet = (k,v) => {try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const pct = (a,b) => b>0 ? Math.max(0,Math.min(100,a/b*100)) : (a>0?100:0);
+const av = (w,lg) => `<span class="av ${w}${lg?' lg':''}">${N[w][0]}</span>`;
+function toast(t){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),3000)}
+
+/* =========================================================
+   2) ALMACENAMIENTO: Firebase (real) o localStorage (demo)
+   ========================================================= */
+const DEMO = !FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === 'PEGAR_ACA';
+
+function demoStore(){
+  const KEY='gastos-demo-v1';let data;try{data=JSON.parse(lsGet(KEY))||{}}catch(e){data={}}
+  const subs={};const save=()=>lsSet(KEY,JSON.stringify(data));
+  const emit=c=>(subs[c]||[]).forEach(cb=>cb(Object.entries(data[c]||{}).map(([id,v])=>({id,...v}))));
+  return{
+    sub(c,cb){(subs[c]=subs[c]||[]).push(cb);setTimeout(()=>emit(c),0)},
+    async set(c,id,v){(data[c]=data[c]||{})[id]=JSON.parse(JSON.stringify(v));save();emit(c)},
+    async del(c,id){if(data[c])delete data[c][id];save();emit(c)},
+    async get(c,id){return data[c]?.[id]||null}
+  };
+}
+async function fireStore(){
+  const V='11.0.2',B=`https://www.gstatic.com/firebasejs/${V}/`;
+  const [{initializeApp},A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+  const app=initializeApp(FIREBASE_CONFIG);
+  const auth=A.getAuth(app);
+  let db;try{db=F.initializeFirestore(app,{localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()})})}catch(e){db=F.getFirestore(app)}
+  return{auth,A,
+    sub(c,cb,err){return F.onSnapshot(F.collection(db,c),s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))),err)},
+    set:(c,id,v)=>F.setDoc(F.doc(db,c,id),v),
+    del:(c,id)=>F.deleteDoc(F.doc(db,c,id)),
+    get:async(c,id)=>{const s=await F.getDoc(F.doc(db,c,id));return s.exists()?s.data():null}
+  };
+}
+
+/* ---------- estado ---------- */
+let store=null, user=null, phase='loading', errMsg='';
+let me=lsGet('gastos-who'), month=ymOf(new Date()), tab='res', filt='all';
+let gastos=[], pagos=[], meses=[], got={g:0,p:0,m:0}, subsOn=false, armed=null;
+let draft=null, draftMonth=null, openCats=new Set(), pendingRender=false;
+
+function write(p,okMsg){Promise.resolve(p).catch(e=>{console.error(e);toast('No se pudo guardar'+(e?.code==='permission-denied'?' (sin permiso)':''))});if(okMsg)toast(okMsg)}
+
+/* =========================================================
+   3) CÁLCULOS
+   Un gasto es "fijo" (presupuesto del mes) o "extra".
+   Los extras pueden ir en cuotas: "monto" es el valor de cada cuota
+   y se repite n meses desde el mes de la fecha.
+   bal > 0  →  Dani le debe a Gonza;  bal < 0  →  Gonza le debe a Dani
+   ========================================================= */
+const tipoOf = g => g.tipo==='extra'?'extra':'fijo';
+const nOf = g => Math.max(1,Math.min(60,g.n||1));
+const startM = g => g.fecha.slice(0,7);
+const shareG = g => g.para==='G'?g.monto:g.para==='D'?0:g.monto/2;
+const netOf = g => (g.pago==='G'?g.monto:0) - shareG(g);
+const sig = p => (p.from==='D'?-1:1)*p.monto;
+
+function occIn(m){
+  const out=[];
+  gastos.forEach(g=>{const off=mIdx(m)-mIdx(startM(g));if(off>=0&&off<nOf(g))out.push({...g,k:off+1})});
+  return out;
+}
+function budgetFor(m){
+  const own=meses.find(x=>x.id===m);if(own)return{items:own.items||[],src:'own'};
+  const prev=meses.filter(x=>x.id<m).sort((a,b)=>b.id.localeCompare(a.id))[0];
+  if(prev)return{items:prev.items||[],src:'prev',from:prev.id};
+  return{items:DEFAULT_ITEMS,src:'default'};
+}
+function monthData(m){
+  const L=occIn(m), F=L.filter(g=>tipoOf(g)==='fijo'), X=L.filter(g=>tipoOf(g)==='extra');
+  const paid={G:0,D:0},paidF={G:0,D:0},paidX={G:0,D:0};let net=0;
+  L.forEach(g=>{paid[g.pago]+=g.monto;(tipoOf(g)==='fijo'?paidF:paidX)[g.pago]+=g.monto;net+=netOf(g)});
+  /* lo que quedó pendiente de meses anteriores (cada cuota cuenta en su mes) */
+  let carry=0;
+  gastos.forEach(g=>{const k=Math.max(0,Math.min(nOf(g),mIdx(m)-mIdx(startM(g))));carry+=netOf(g)*k});
+  pagos.forEach(p=>{if(p.mes<m)carry+=sig(p)});
+  const sets=pagos.filter(p=>p.mes===m);
+  const bal=carry+net+sets.reduce((a,p)=>a+sig(p),0);
+  const bud=budgetFor(m);
+  const est=bud.items.reduce((a,i)=>a+(i.est||0),0);
+  const totF=paidF.G+paidF.D, totX=paidX.G+paidX.D;
+  /* fijos: real vs estimado por concepto */
+  const key=(c,n)=>c+'|'+String(n).trim().toLowerCase();
+  const real={};F.forEach(g=>{const k=key(g.cat,g.concepto);real[k]=(real[k]||0)+g.monto});
+  const cats=CATS.map(c=>{
+    const rows=bud.items.filter(i=>i.cat===c.id).map(i=>({name:i.name,est:i.est||0,real:real[key(c.id,i.name)]||0}));
+    const known=new Set(rows.map(r=>key(c.id,r.name)));
+    F.filter(g=>catOf(g.cat).id===c.id).forEach(g=>{const k=key(c.id,g.concepto);if(!known.has(k)){known.add(k);rows.push({name:g.concepto,est:0,real:real[key(g.cat,g.concepto)]||0,extra:true})}});
+    return{...c,rows,est:rows.reduce((a,r)=>a+r.est,0),real:rows.reduce((a,r)=>a+r.real,0)};
+  });
+  /* extras por categoría */
+  const xcats=XCATS.map(c=>({...c,real:X.filter(g=>catOf(g.cat).id===c.id).reduce((a,g)=>a+g.monto,0)})).filter(c=>c.real>0).sort((a,b)=>b.real-a.real);
+  return{L,F,X,paid,paidF,paidX,totF,totX,total:totF+totX,carry,bal,sets,bud,est,cats,xcats};
+}
+
+/* =========================================================
+   4) PANTALLAS
+   ========================================================= */
+function topBar(){
+  return `<div class="top"><div class="mnav"><button data-m="-1" aria-label="Mes anterior">‹</button><span>${mLabel(month)}</span><button data-m="1" aria-label="Mes siguiente">›</button></div><button class="who" id="who">${av(me)}${N[me]}</button></div>`;
+}
+function render(force){
+  const app=$('#app');
+  if(!force&&tab==='pres'&&document.activeElement?.closest?.('#pres')){pendingRender=true;return}
+  pendingRender=false;
+  const nav=$('#nav');if(nav)nav.remove();
+  if(phase==='loading'){app.innerHTML='<div class="empty">Cargando…</div>';return}
+  if(phase==='error'){app.innerHTML=`<div class="center"><h2>Ups</h2><p class="lbl">${esc(errMsg)}</p>${user?'<button class="btn sec" id="out">Salir</button>':''}</div>`;const o=$('#out');if(o)o.onclick=logout;return}
+  if(phase==='login')return renderLogin(app);
+  if(phase==='verify')return renderVerify(app);
+  if(!(got.g&&got.p&&got.m)){app.innerHTML='<div class="empty">Cargando datos…</div>';return}
+  if(!me){app.innerHTML=`<div class="center"><div style="font-size:48px">👋</div><h2>¿Quién sos?</h2><p class="lbl">Se guarda en este teléfono.</p><button class="btn" data-w="G" style="background:var(--g)">Soy Gonza</button><button class="btn" data-w="D" style="background:var(--d)">Soy Dani</button></div>`;
+    app.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{me=b.dataset.w;lsSet('gastos-who',me);render()});return}
+
+  const d=monthData(month);
+  let h=DEMO?'<div class="demo">Modo demo: los datos quedan solo en este teléfono.</div>':'';
+  if(tab==='res')h+=resHtml(d);
+  else{h+=topBar();h+=tab==='fij'?fijHtml(d):tab==='ext'?extHtml(d):presHtml(d)}
+  if(tab==='ext')h+=`<button class="fab x" id="add">+ Extra</button>`;
+  else if(tab!=='pres')h+=`<button class="fab" id="add">+ Gasto</button>`;
+  app.innerHTML=h;
+  const n=document.createElement('nav');n.className='nav';n.id='nav';
+  n.innerHTML='<div>'+[['res','📊','Resumen'],['fij','🧾','Fijos'],['ext','🍦','Extras'],['pres','📝','Presupuesto']].map(t=>`<button data-t="${t[0]}" class="${tab===t[0]?'on':''}"><i>${t[1]}</i>${t[2]}</button>`).join('')+'</div>';
+  document.body.appendChild(n);
+  bindMain(d);
+}
+
+function resHtml(d){
+  const half=d.est/2,b=d.bal,r=Math.abs(b)>=0.5;
+  const debtor=b>0?'D':'G',cred=b>0?'G':'D';
+  let h=`<div class="hero">${topBar()}`;
+  h+=r?`<div class="k">Para quedar a mano</div><div class="v num">${N[debtor]} le da ${money(Math.abs(b))} a ${N[cred]}</div>${Math.abs(d.carry)>=0.5?`<div class="s">Incluye ${money(Math.abs(d.carry))} pendiente de meses anteriores</div>`:`<div class="s">Fijos y extras de ${mLabel(month).toLowerCase()}</div>`}<button class="hb" id="settle">Saldar</button>`
+       :`<div class="k">Estado</div><div class="v">${d.L.length||d.sets.length?'Están a mano ✓':'Sin gastos todavía'}</div><div class="s">Gastado en el mes: ${money(d.total)}</div>`;
+  h+=`</div>`;
+  h+=`<div class="two">${['G','D'].map(w=>`<div class="card"><div class="pp">${av(w,1)}<span>${N[w]}</span></div><div class="lbl">Pagó</div><div class="big num ${w}">${money(d.paid[w])}</div><span class="sub">Fijos ${money(d.paidF[w])} · Extras ${money(d.paidX[w])}</span></div>`).join('')}</div>`;
+  if(d.sets.length)h+=`<div class="card"><div class="ttl"><b>Pagos entre ustedes</b></div>${d.sets.map(rowP).join('')}</div>`;
+  /* fijos */
+  const overF=d.est>0&&d.totF>d.est;
+  h+=`<div class="card"><div class="ttl"><b>🧾 Gastos fijos</b><button class="link" data-go="fij">Ver ›</button></div>`;
+  h+=`<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="big num">${money(d.totF)}</span><span class="lbl num">de ${money(d.est)}</span></div><div class="bar ${overF?'red':''}"><i style="width:${pct(d.totF,d.est)}%"></i></div>`;
+  h+=`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span class="lbl">Cada uno pone ${money(half)}</span><span class="${overF?'over':'lbl'}">${d.est>0?(overF?'Se pasaron '+money(d.totF-d.est):'Faltan '+money(d.est-d.totF)):''}</span></div>`;
+  h+=d.cats.filter(c=>c.rows.length).map(c=>{
+    const over=c.est>0&&c.real>c.est;
+    return `<details class="cat" data-cat="${c.id}" ${openCats.has(c.id)?'open':''}><summary>${ciHtml(c)}<div style="flex:1;min-width:0"><div class="ch"><span>${esc(c.name)}</span><span class="num ${over?'over':''}">${money(c.real)} <span class="lbl">/ ${money(c.est)}</span></span></div><div class="bar sm ${over?'red':''}"><i style="width:${pct(c.real,c.est)}%"></i></div></div><span class="chev">›</span></summary>`+
+      c.rows.map(r=>{const st=r.real===0?'':r.est>0&&r.real>r.est?'over':r.est>0&&r.real>=r.est?'done':'';
+        return `<div class="cr"><span class="n">${st==='done'?'✓ ':''}${esc(r.name)}${r.extra?' <span class="lbl">(sin estimar)</span>':''}</span><span class="v num"><b class="${st}">${r.real?money(r.real):'—'}</b> / ${money(r.est)}</span><button class="ic plus" data-q="${c.id}" data-qn="${esc(r.name)}" aria-label="Cargar ${esc(r.name)}">+</button></div>`}).join('')+`</details>`}).join('');
+  h+=`</div>`;
+  /* extras */
+  h+=`<div class="card"><div class="ttl"><b>🍦 Extras</b><button class="link" data-go="ext">Ver ›</button></div>`;
+  if(d.X.length){
+    const mx=d.xcats[0]?.real||1;
+    h+=`<div class="big num" style="margin-bottom:4px">${money(d.totX)}</div>`;
+    h+=d.xcats.map(c=>`<div class="xb">${ciHtml(c)}<div class="rt"><div class="ch"><span style="font-size:14px">${esc(c.name)}</span><span class="num" style="font-size:14px">${money(c.real)}</span></div><div class="bar sm"><i style="width:${c.real/mx*100}%;background:${c.col}"></i></div></div></div>`).join('');
+    const cu=d.X.filter(g=>nOf(g)>1);
+    if(cu.length)h+=`<div class="hint">Incluye ${cu.length} cuota${cu.length>1?'s':''} de compras en cuotas.</div>`;
+  }else h+=`<div class="lbl" style="padding:4px 0 2px">Tarjeta, cenas, helados… lo que no es del presupuesto fijo. <button class="link" id="addx">Cargar uno</button></div>`;
+  h+=`</div>`;
+  return h;
+}
+
+function listByDay(L,rowFn){
+  const by={};L.forEach(g=>{(by[g.fecha]=by[g.fecha]||[]).push(g)});
+  return Object.keys(by).sort().reverse().map(f=>`<div class="dayh">${dLong(f)}</div>`+by[f].map(rowFn).join('')).join('');
+}
+function filtHtml(){return `<div class="seg" style="margin-bottom:10px">${[['all','Todos'],['G','Pagó Gonza'],['D','Pagó Dani']].map(o=>`<button data-f="${o[0]}" class="${filt===o[0]?'on':''}">${o[1]}</button>`).join('')}</div>`}
+function fijHtml(d){
+  let L=d.F;if(filt!=='all')L=L.filter(g=>g.pago===filt);
+  let h=`<div class="card"><div class="ttl"><b>Gastos fijos</b><span class="pill num">${money(d.totF)} / ${money(d.est)}</span></div><div class="bar ${d.est>0&&d.totF>d.est?'red':''}" style="margin:0"><i style="width:${pct(d.totF,d.est)}%"></i></div></div>`;
+  h+=filtHtml();
+  h+=`<div class="card">${L.length?listByDay(L,rowG):'<div class="empty">No hay gastos fijos cargados.<br>Tocá “+ Gasto” o el “+” de un concepto en Resumen.</div>'}</div>`;
+  if(d.L.length)h+=`<button class="link" id="csv">⬇ Exportar ${mLabel(month)} (para Excel)</button>`;
+  return h;
+}
+function extHtml(d){
+  let L=d.X;if(filt!=='all')L=L.filter(g=>g.pago===filt);
+  let h=`<div class="card" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff"><div style="font-size:13px;opacity:.85">Extras de ${mLabel(month).toLowerCase()}</div><div class="big num" style="font-size:28px">${money(d.totX)}</div><div style="font-size:13px;opacity:.9">${N.G} ${money(d.paidX.G)} · ${N.D} ${money(d.paidX.D)}</div></div>`;
+  h+=filtHtml();
+  h+=`<div class="card">${L.length?listByDay(L,rowG):'<div class="empty">Sin extras este mes.<br>Cargá la tarjeta, una cena, un helado…</div>'}</div>`;
+  if(d.L.length)h+=`<button class="link" id="csv">⬇ Exportar ${mLabel(month)} (para Excel)</button>`;
+  return h;
+}
+function rowG(g){
+  const c=catOf(g.cat),n=nOf(g);
+  const sub=[`${av(g.pago)} ${N[g.pago]}`.replace('class="av','style="width:16px;height:16px;font-size:9px;display:inline-grid;vertical-align:-3px" class="av'),g.para==='ambos'?'50/50':'solo '+N[g.para]];
+  if(g.nota)sub.push(esc(g.nota));
+  return `<div class="row">${ciHtml(c)}<div class="rt"><b>${esc(g.concepto)}</b><span>${sub.join(' · ')}</span></div><div class="am num">${money(g.monto)}${n>1?`<small>cuota ${g.k}/${n}</small>`:''}</div>${g.foto?`<button class="ic" data-foto="${esc(g.foto)}" aria-label="Ver foto">📎</button>`:''}<button class="ic" data-edit="${esc(g.id)}" aria-label="Editar">✎</button>${delBtn('g:'+g.id,n>1)}</div>`;
+}
+function rowP(p){
+  return `<div class="row"><div class="ci" style="background:var(--acs)">🤝</div><div class="rt"><b>${N[p.from]} le pagó a ${N[p.to]}</b><span>${dLabel(p.fecha)}</span></div><div class="am pos num">${money(p.monto)}</div>${p.foto?`<button class="ic" data-foto="${esc(p.foto)}" aria-label="Ver comprobante">📎</button>`:''}${delBtn('p:'+p.id)}</div>`;
+}
+function delBtn(k,cuotas){return `<button class="ic ${armed===k?'arm':''}" data-del="${esc(k)}" aria-label="Borrar">${armed===k?(cuotas?'¿Borrar todas las cuotas?':'¿Borrar?'):'✕'}</button>`}
+
+function presHtml(d){
+  if(draftMonth!==month){draft=JSON.parse(JSON.stringify(d.bud.items));draftMonth=month}
+  const t=draft.reduce((a,i)=>a+(i.est||0),0);
+  const src=d.bud.src==='own'?'':d.bud.src==='prev'?`Copiado de ${mLabel(d.bud.from)}. Guardalo para fijarlo en este mes.`:'Valores iniciales: cargá los estimados y guardá.';
+  let h=`<div id="pres"><div class="hero" style="padding:16px"><div class="k">Presupuesto de gastos fijos</div><div class="v num" id="ptot">${money(t)}</div><div class="s" id="phalf">Cada uno pone ${money(t/2)}</div>${src?`<div class="s" style="margin-top:6px">${src}</div>`:''}</div>`;
+  CATS.forEach(c=>{
+    h+=`<div class="card"><div class="pp">${ciHtml(c)}<b>${esc(c.name)}</b></div>`;
+    draft.forEach((it,i)=>{if(it.cat!==c.id)return;h+=`<div class="pr"><input type="text" class="nm" data-pi="${i}" data-pf="name" value="${esc(it.name)}" placeholder="Concepto"><input type="text" class="es num" inputmode="decimal" data-pi="${i}" data-pf="est" value="${fmtIn(it.est)}" placeholder="$ 0"><button class="ic" data-prm="${i}" aria-label="Quitar">✕</button></div>`});
+    h+=`<button class="link" data-padd="${c.id}">+ Agregar concepto</button></div>`;
+  });
+  h+=`<div class="acts" style="margin-bottom:8px"><button class="btn" id="psave">Guardar presupuesto de ${mLabel(month)}</button></div><p class="hint" style="text-align:center">Los meses siguientes sin presupuesto propio copian este. Los extras no van acá.</p></div>`;
+  return h;
+}
+
+function bindMain(d){
+  const qa=s=>document.querySelectorAll(s);
+  qa('[data-m]').forEach(x=>x.onclick=()=>{month=mFrom(mIdx(month)+Number(x.dataset.m));render(true)});
+  qa('[data-t]').forEach(x=>x.onclick=()=>{tab=x.dataset.t;filt='all';render(true);scrollTo(0,0)});
+  qa('[data-go]').forEach(x=>x.onclick=()=>{tab=x.dataset.go;filt='all';render(true);scrollTo(0,0)});
+  $('#who').onclick=openMenu;
+  const add=$('#add');if(add)add.onclick=()=>openGasto(null,{tipo:tab==='ext'?'extra':'fijo'});
+  const addx=$('#addx');if(addx)addx.onclick=()=>openGasto(null,{tipo:'extra'});
+  const sb=$('#settle');if(sb)sb.onclick=()=>openSettle(d.bal>0?'D':'G',d.bal>0?'G':'D',Math.abs(d.bal));
+  qa('details.cat').forEach(x=>x.ontoggle=()=>{x.open?openCats.add(x.dataset.cat):openCats.delete(x.dataset.cat)});
+  qa('[data-q]').forEach(x=>x.onclick=e=>{e.preventDefault();const r=d.cats.find(c=>c.id===x.dataset.q).rows.find(r=>r.name===x.dataset.qn);openGasto(null,{tipo:'fijo',cat:x.dataset.q,concepto:x.dataset.qn,monto:r&&r.est>r.real?r.est-r.real:0})});
+  qa('[data-f]').forEach(x=>x.onclick=()=>{filt=x.dataset.f;render(true)});
+  qa('[data-edit]').forEach(x=>x.onclick=()=>openGasto(gastos.find(g=>g.id===x.dataset.edit)));
+  qa('[data-del]').forEach(x=>x.onclick=()=>delItem(x.dataset.del));
+  qa('[data-foto]').forEach(x=>x.onclick=()=>showFoto(x.dataset.foto));
+  const csv=$('#csv');if(csv)csv.onclick=()=>exportCsv(d);
+  const pres=$('#pres');
+  if(pres){
+    const totals=()=>{const t=draft.reduce((a,i)=>a+(i.est||0),0);$('#ptot').textContent=money(t);$('#phalf').textContent='Cada uno pone '+money(t/2)};
+    pres.querySelectorAll('[data-pi]').forEach(x=>{
+      x.oninput=()=>{const it=draft[+x.dataset.pi];if(x.dataset.pf==='name')it.name=x.value;else{it.est=parseAmt(x.value)||0;totals()}};
+      x.onblur=()=>setTimeout(()=>{if(pendingRender&&!document.activeElement?.closest?.('#pres'))render()},0);
+    });
+    pres.querySelectorAll('[data-prm]').forEach(x=>x.onclick=()=>{draft.splice(+x.dataset.prm,1);render(true)});
+    pres.querySelectorAll('[data-padd]').forEach(x=>x.onclick=()=>{const c=x.dataset.padd;let at=-1;draft.forEach((it,i)=>{if(it.cat===c)at=i});const it={cat:c,name:'',est:0};const pos=at<0?draft.length:at+1;draft.splice(pos,0,it);render(true);setTimeout(()=>{const el=document.querySelector(`[data-pi="${pos}"][data-pf="name"]`);el&&el.focus()},0)});
+    $('#psave').onclick=()=>{
+      const items=draft.map(i=>({cat:i.cat,name:i.name.trim(),est:i.est||0})).filter(i=>i.name);
+      document.activeElement?.blur?.();
+      write(store.set('meses',month,{items,por:me,actualizado:new Date().toISOString()}),'Presupuesto guardado ✓');
+      draftMonth=null;tab='res';render(true);scrollTo(0,0);
+    };
+  }
+}
+
+async function delItem(k){
+  if(armed!==k){armed=k;render(true);setTimeout(()=>{if(armed===k){armed=null;render()}},3500);return}
+  armed=null;const t=k[0],id=k.slice(2);
+  const o=(t==='g'?gastos:pagos).find(x=>x.id===id);
+  write(store.del(t==='g'?'gastos':'pagos',id));
+  if(o?.foto)write(store.del('fotos',o.foto));
+  toast('Borrado');
+}
+
+/* ---------- hojas ---------- */
+function sheet(html){
+  const ov=document.createElement('div');ov.className='ov';
+  ov.innerHTML='<div class="sheet">'+html+'</div>';
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+  $('#layer').appendChild(ov);return ov;
+}
+function seg(el,opts,val,cb){
+  el.classList.add('seg');el.innerHTML=opts.map(o=>`<button type="button" data-v="${esc(o[0])}" class="${o[0]===val?'on':''}">${o[1]}</button>`).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{el.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v)});
+}
+
+function openGasto(old,pre={}){
+  const ed=!!old;
+  let tipo=old?tipoOf(old):(pre.tipo||'fijo');
+  let pago=old?.pago||me, para=old?.para||'ambos';
+  let cat=old?.cat||pre.cat||(tipo==='extra'?'tarjeta':'super'), concepto=old?.concepto||pre.concepto||'';
+  let fotoFile=null, quitarFoto=false;
+  const preMonto=ed?old.monto:pre.monto;
+  const ov=sheet(`<h2>${ed?'Editar gasto':'Nuevo gasto'}</h2>
+  <div class="f"><div id="tp" class="tipo"></div></div>
+  <div class="f"><label id="al">Monto</label><input class="amt num" id="a" type="text" inputmode="decimal" autocomplete="off" placeholder="0" value="${fmtIn(preMonto)}"><div class="hint" id="ah"></div></div>
+  <div class="f"><label>Categoría</label><div id="c" class="chips"></div></div>
+  <div class="f" id="kf"><label>Concepto</label><div id="k" class="chips"></div><input id="ko" type="text" placeholder="Escribí el concepto" maxlength="60" style="margin-top:8px;display:none"></div>
+  <div class="f" id="xf"><label>¿Qué fue?</label><input id="xd" type="text" maxlength="60" placeholder="Ej: Cena en Kansas, zapatillas…" value=""></div>
+  <div class="f" id="nf"><label>Cuotas</label><input id="n" type="number" inputmode="numeric" min="1" max="60" value="${old?.n||1}"><div class="hint">Si es en cuotas, poné arriba el valor de cada cuota: se carga sola en los meses siguientes.</div></div>
+  <div class="f"><label>Quién pagó</label><div id="p"></div></div>
+  <div class="f"><label>Para quién es</label><div id="w"></div></div>
+  <div class="f"><label>Fecha</label><input id="dt" type="date" value="${old?.fecha||(month===ymOf(new Date())?today():month+'-01')}"></div>
+  <div class="f"><label>Nota (opcional)</label><input id="nt" type="text" maxlength="80" placeholder="Ej: Coto, compra grande" value="${esc(old?.nota||'')}"></div>
+  <div class="f"><label>Foto del ticket (opcional)</label><input id="fl" type="file" accept="image/*">${ed&&old.foto?'<div class="hint">Ya tiene foto. <button class="link" id="qf" type="button">Quitar foto</button></div>':''}</div>
+  <div class="acts"><button class="btn sec" id="x">Cancelar</button><button class="btn" id="ok">Guardar</button></div>`);
+  const q=s=>ov.querySelector(s);
+  if(tipo==='extra')q('#xd').value=concepto;
+  function drawTipo(){
+    const X=tipo==='extra';
+    q('#kf').style.display=X?'none':'';q('#xf').style.display=X?'':'none';q('#nf').style.display=X?'':'none';
+    q('#al').textContent=X?'Monto (o valor de cada cuota)':'Monto';
+    seg(q('#c'),(X?XCATS:CATS).map(c=>[c.id,c.ic+' '+c.name]),cat,v=>{cat=v;if(!X){concepto='';drawK()}hint()});
+    if(!X)drawK();
+    q('#ok').style.background=X?'#7c3aed':'';
+    hint();
+  }
+  seg(q('#tp'),[['fijo','🧾 Gasto fijo'],['extra','🍦 Extra']],tipo,v=>{
+    if(v===tipo)return;tipo=v;cat=v==='extra'?'tarjeta':'super';
+    if(v==='extra'){q('#xd').value='';}else concepto='';
+    drawTipo();
+  });
+  function drawK(){
+    const names=budgetFor(month).items.filter(i=>i.cat===cat).map(i=>i.name);
+    if(concepto&&!names.includes(concepto))names.push(concepto);
+    q('#ko').style.display='none';
+    seg(q('#k'),[...names.map(n=>[n,esc(n)]),['__otro','✎ Otro…']],concepto||'',v=>{
+      if(v==='__otro'){concepto='';q('#ko').style.display='block';q('#ko').focus();return}
+      q('#ko').style.display='none';concepto=v;
+      const it=budgetFor(month).items.find(i=>i.cat===cat&&i.name===v);
+      if(it?.est&&!q('#a').value)q('#a').value=fmtIn(it.est);
+      hint();
+    });
+  }
+  q('#ko').oninput=()=>{concepto=q('#ko').value};
+  seg(q('#p'),[['G','Gonza'],['D','Dani']],pago,v=>pago=v);
+  seg(q('#w'),[['ambos','Ambos 50/50'],['G','Solo Gonza'],['D','Solo Dani']],para,v=>para=v);
+  function hint(){
+    const a=parseAmt(q('#a').value)||0,n=Math.max(1,Math.min(60,parseInt(q('#n').value)||1));
+    let t='';
+    if(tipo==='extra'){if(a)t=n>1?`${n} cuotas de ${money(a)} · total ${money(a*n)} · última en ${mShort(mFrom(mIdx((q('#dt').value||today()).slice(0,7))+n-1))}`:'Se carga '+money(a)}
+    else{const it=budgetFor(month).items.find(i=>i.cat===cat&&i.name===concepto);t=(a?'Se carga '+money(a):'')+(it?.est?`${a?' · ':''}estimado ${money(it.est)}`:'')}
+    q('#ah').textContent=t;
+  }
+  q('#a').oninput=hint;q('#n').oninput=hint;q('#dt').oninput=hint;
+  drawTipo();
+  q('#fl').onchange=()=>{fotoFile=q('#fl').files[0]||null};
+  const qf=q('#qf');if(qf)qf.onclick=()=>{quitarFoto=true;qf.parentElement.textContent='Se va a quitar la foto al guardar.'};
+  q('#x').onclick=()=>ov.remove();
+  q('#ok').onclick=async()=>{
+    const monto=parseAmt(q('#a').value);
+    if(!(monto>0)){toast('Poné un monto');q('#a').focus();return}
+    const X=tipo==='extra';
+    const conc=((X?q('#xd').value:concepto)||'').trim()||catOf(cat).name;
+    const n=X?Math.max(1,Math.min(60,parseInt(q('#n').value)||1)):1;
+    const btn=q('#ok');btn.disabled=true;btn.textContent='Guardando…';
+    let foto=quitarFoto?null:(old?.foto||null);
+    try{
+      if(fotoFile){const data=await compress(fotoFile);const fid=uid();await store.set('fotos',fid,{data,creado:new Date().toISOString()});if(old?.foto)write(store.del('fotos',old.foto));foto=fid}
+      else if(quitarFoto&&old?.foto)write(store.del('fotos',old.foto));
+    }catch(e){console.error(e);btn.disabled=false;btn.textContent='Guardar';toast('No se pudo subir la foto');return}
+    const fecha=q('#dt').value||today();
+    const doc={tipo,monto,cat,concepto:conc,pago,para,fecha,nota:q('#nt').value.trim(),por:old?.por||me,creado:old?.creado||new Date().toISOString(),...(n>1?{n}:{}),...(ed?{editado:new Date().toISOString(),editadoPor:me}:{}),...(foto?{foto}:{})};
+    write(store.set('gastos',old?.id||uid(),doc));
+    if(!ed&&fecha.slice(0,7)!==month)month=fecha.slice(0,7);
+    ov.remove();toast(n>1?`Cargadas ${n} cuotas ✓`:'Gasto guardado ✓');
+  };
+  if(!ed&&!pre.monto)setTimeout(()=>q('#a').focus(),50);
+}
+
+function openSettle(from,to,amt){
+  let fotoFile=null;
+  const ov=sheet(`<h2>Saldar ${mLabel(month)}</h2><p class="lbl">${N[from]} le paga a ${N[to]} (fijos + extras). Podés cambiar el monto si es un pago parcial.</p>
+  <div class="f"><label>Monto</label><input class="amt num" id="a" type="text" inputmode="decimal" autocomplete="off" value="${fmtIn(Math.round(amt*100)/100)}"></div>
+  <div class="f"><label>Comprobante (opcional)</label><input id="fl" type="file" accept="image/*"></div>
+  <div class="acts"><button class="btn sec" id="x">Cancelar</button><button class="btn" id="ok">Marcar como pagado</button></div>`);
+  const q=s=>ov.querySelector(s);
+  q('#fl').onchange=()=>{fotoFile=q('#fl').files[0]||null};
+  q('#x').onclick=()=>ov.remove();
+  q('#ok').onclick=async()=>{
+    const monto=parseAmt(q('#a').value);if(!(monto>0)){toast('Poné un monto');return}
+    const btn=q('#ok');btn.disabled=true;btn.textContent='Guardando…';
+    let foto=null;
+    try{if(fotoFile){const data=await compress(fotoFile);foto=uid();await store.set('fotos',foto,{data,creado:new Date().toISOString()})}}
+    catch(e){btn.disabled=false;btn.textContent='Marcar como pagado';toast('No se pudo subir el comprobante');return}
+    write(store.set('pagos',uid(),{from,to,monto,mes:month,fecha:today(),por:me,creado:new Date().toISOString(),...(foto?{foto}:{})}));
+    ov.remove();toast('Saldado ✓');
+  };
+}
+
+function openMenu(){
+  const o=me==='G'?'D':'G';
+  const ov=sheet(`<div class="pp" style="font-size:19px">${av(me,1)}${N[me]}</div>${user?`<p class="lbl">${esc(user.email)}</p>`:''}
+  <button class="btn sec" id="sw" style="width:100%;margin-bottom:8px">Cambiar a ${N[o]}</button>
+  <button class="btn sec" id="hoy" style="width:100%;margin-bottom:8px">Ir al mes actual</button>
+  ${user?'<button class="btn sec" id="lo" style="width:100%;margin-bottom:8px">Cerrar sesión</button>':''}
+  <button class="btn" id="x" style="width:100%">Listo</button>`);
+  const q=s=>ov.querySelector(s);
+  q('#sw').onclick=()=>{me=o;lsSet('gastos-who',me);ov.remove();render(true)};
+  q('#hoy').onclick=()=>{month=ymOf(new Date());ov.remove();render(true)};
+  const lo=q('#lo');if(lo)lo.onclick=()=>{ov.remove();logout()};
+  q('#x').onclick=()=>ov.remove();
+}
+
+async function showFoto(id){
+  const ov=sheet('<div class="empty">Cargando foto…</div>');
+  try{const f=await store.get('fotos',id);ov.querySelector('.sheet').innerHTML=f?`<img class="photo" src="${esc(f.data)}" alt="Foto del ticket"><div class="acts" style="margin-top:12px"><button class="btn" id="x">Cerrar</button></div>`:'<div class="empty">No se encontró la foto.</div>';const x=ov.querySelector('#x');if(x)x.onclick=()=>ov.remove()}
+  catch(e){ov.querySelector('.sheet').innerHTML='<div class="empty">No se pudo cargar la foto.</div>'}
+}
+
+/* Achica la foto para que entre en la base (máx ~700 KB) */
+function compress(file){
+  return new Promise((res,rej)=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{
+      let max=1400,q=.72,out='';
+      for(let i=0;i<8;i++){
+        const s=Math.min(1,max/Math.max(img.width,img.height));
+        const c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        out=c.toDataURL('image/jpeg',q);
+        if(out.length<700000)break;
+        max*=.8;q=Math.max(.45,q-.07);
+      }
+      URL.revokeObjectURL(url);out.length<1000000?res(out):rej(new Error('grande'));
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('img'))};
+    img.src=url;
+  });
+}
+
+function exportCsv(d){
+  const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
+  const num=n=>String(n).replace('.',',');
+  const rows=[['Fecha','Tipo','Categoría','Concepto','Cuota','Nota','Pagó','Para','Monto'].map(q).join(';')];
+  [...d.L].sort((a,b)=>tipoOf(a).localeCompare(tipoOf(b))||a.fecha.localeCompare(b.fecha)).forEach(g=>rows.push([g.fecha,tipoOf(g)==='extra'?'Extra':'Fijo',catOf(g.cat).name,g.concepto,nOf(g)>1?`${g.k}/${nOf(g)}`:'',g.nota,N[g.pago],g.para==='ambos'?'Ambos':N[g.para],num(g.monto)].map(q).join(';')));
+  const blob=new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`gastos-${month}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+
+/* =========================================================
+   5) LOGIN (solo Firebase)
+   ========================================================= */
+const AUTH_ERR={'auth/invalid-credential':'Email o contraseña incorrectos.','auth/wrong-password':'Contraseña incorrecta.','auth/user-not-found':'No existe esa cuenta.','auth/email-already-in-use':'Ese email ya tiene cuenta: tocá Ingresar.','auth/weak-password':'La contraseña tiene que tener al menos 6 caracteres.','auth/invalid-email':'El email no es válido.','auth/too-many-requests':'Demasiados intentos. Probá en unos minutos.','auth/network-request-failed':'Sin conexión.'};
+function renderLogin(app){
+  app.innerHTML=`<div class="hero" style="text-align:center;padding:28px 16px;margin-top:20px"><div style="font-size:44px;position:relative">💸</div><div class="v">Nido</div><div class="s">Los gastos de la casa · Ingresá con tu email</div></div><div class="card">
+  <div class="f"><label>Email</label><input id="em" type="email" autocomplete="email"></div>
+  <div class="f"><label>Contraseña</label><input id="pw" type="password" autocomplete="current-password"></div>
+  <button class="btn" id="in" style="width:100%;margin-bottom:8px">Ingresar</button><button class="btn sec" id="up" style="width:100%">Crear cuenta</button><div style="text-align:center"><button class="link" id="fg">Olvidé mi contraseña</button></div></div>`;
+  const {A,auth}=store;const em=()=>$('#em').value.trim(),pw=()=>$('#pw').value;
+  const go=async(fn,btn)=>{btn.disabled=true;try{await fn()}catch(e){toast(AUTH_ERR[e.code]||('Error: '+(e.code||e.message)))}btn.disabled=false};
+  $('#in').onclick=e=>go(()=>A.signInWithEmailAndPassword(auth,em(),pw()),e.target);
+  $('#up').onclick=e=>go(async()=>{const c=await A.createUserWithEmailAndPassword(auth,em(),pw());await A.sendEmailVerification(c.user);toast('Te mandamos un mail para verificar')},e.target);
+  $('#fg').onclick=e=>go(async()=>{if(!em())throw{code:'auth/invalid-email'};await A.sendPasswordResetEmail(auth,em());toast('Te mandamos un mail para cambiarla')},e.target);
+}
+function renderVerify(app){
+  app.innerHTML=`<div class="center"><div style="font-size:44px">📬</div><h2>Verificá tu email</h2><p class="lbl">Te mandamos un mail a <b>${esc(user.email)}</b>. Abrí el link y después tocá el botón. (Fijate en spam.)</p>
+  <button class="btn" id="ok">Ya lo verifiqué</button><button class="btn sec" id="re">Reenviar mail</button><button class="link" id="lo">Usar otra cuenta</button></div>`;
+  $('#ok').onclick=async()=>{await user.reload();await user.getIdToken(true);user=store.auth.currentUser;if(user.emailVerified){phase='app';startSubs()}else toast('Todavía no figura verificado')};
+  $('#re').onclick=async()=>{try{await store.A.sendEmailVerification(user);toast('Reenviado')}catch(e){toast(AUTH_ERR[e.code]||'No se pudo reenviar')}};
+  $('#lo').onclick=logout;
+}
+async function logout(){if(store?.auth)await store.A.signOut(store.auth)}
+
+/* =========================================================
+   6) ARRANQUE
+   ========================================================= */
+const unsubs=[];
+function startSubs(){
+  if(subsOn)return;subsOn=true;render();
+  const onErr=e=>{console.error(e);phase='error';errMsg=e?.code==='permission-denied'?`La cuenta ${user?.email||''} no tiene permiso. Revisá que el email esté en las reglas de Firestore.`:'No se pudo conectar con los datos.';render()};
+  const s1=store.sub('gastos',v=>{gastos=v.filter(g=>g.fecha&&g.monto);got.g=1;render()},onErr);
+  const s2=store.sub('pagos',v=>{pagos=v;got.p=1;render()},onErr);
+  const s3=store.sub('meses',v=>{meses=v;got.m=1;render()},onErr);
+  [s1,s2,s3].forEach(u=>typeof u==='function'&&unsubs.push(u));
+}
+function stopSubs(){unsubs.splice(0).forEach(u=>u());subsOn=false;got={g:0,p:0,m:0};gastos=[];pagos=[];meses=[]}
+
+(async()=>{
+  render();
+  if(DEMO){store=demoStore();phase='app';startSubs();return}
+  try{store=await fireStore()}catch(e){console.error(e);phase='error';errMsg='No se pudo cargar Firebase. Revisá la conexión o la configuración.';render();return}
+  store.A.onAuthStateChanged(store.auth,u=>{
+    user=u;
+    if(!u){stopSubs();phase='login'}
+    else if(!u.emailVerified){stopSubs();phase='verify'}
+    else{phase='app';startSubs()}
+    render();
+  });
+})();
+
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
